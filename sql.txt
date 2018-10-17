@@ -1,0 +1,119 @@
+#一：创建表
+#1.mysql -uroot -p111111
+#创建数据库
+create database lxhomework charset utf8;
+#选择数据库
+use lxhomework;
+
+#年级表
+4.create table class_grade(
+    gid int primary key auto_increment,
+    gname char(20) not null
+);
+
+#老师表
+create table teacher(
+    tid int primary key auto_increment,
+    tname char(20) not null
+);
+
+#班级表
+create table class(
+    cid int primary key auto_increment,
+    caption char(20) not null,
+    grade_id int,
+    foreign key(grade_id) references class_grade(gid)
+);
+
+#学生表
+create table student(
+    sid int primary key auto_increment,
+    sname char(20) not null,
+    gender enum('男','女') not null default '男',
+    class_id int,
+    foreign key(class_id) references class(cid)
+);
+
+#课程表
+create table course(
+    cid int primary key auto_increment,
+    cname char(20) not null,
+    teacher_id int,
+    foreign key(teacher_id) references teacher(tid)
+);
+
+#成绩表
+create table score(
+    sid int primary key auto_increment,
+    student_id int,
+    course_id int,
+    score int not null,
+    foreign key(student_id) references student(sid),
+    foreign key(course_id) references course(cid)
+);
+
+#班级任职表
+create table teach2cls(
+    tcid int primary key auto_increment,
+    tid int,
+    cid int,
+    foreign key(tid) references teacher(tid),
+    foreign key(cid) references class(cid)
+);
+
+
+#二：
+#1.自行创建测试数据
+
+#年级表插入数据
+insert into class_grade valuse(
+('一年级'),
+('二年级'),
+('三年级')
+);
+
+#老师表插入数据
+insert into teacher values(
+('张三'),
+('李四'),
+('王五')
+);
+
+#班级表插入数据
+insert into class values(
+('一年一班',1),
+('二年一班',2),
+('三年二班',3)
+);
+
+#学生表插入数据
+insert into student values(
+('乔丹','女',1),
+('艾弗森','女',1),
+('科比','男',2)
+);
+
+#课程表插入数据
+insert into course values(
+('生物',1),
+('体育',1),
+('物理',2)
+);
+
+#成绩表插入数据
+insert into score values(
+(1,1,60),
+(1,2,59),
+(2,2,99)
+);
+
+#班级任职表插入数据
+insert into teach2cls values(
+(1,1),
+(1,2),
+(2,1),
+(3,2)
+);
+
+#2.查询学生总人数
+select count(sid) from student;
