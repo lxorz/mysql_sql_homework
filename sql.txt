@@ -6,7 +6,8 @@ create database lxhomework charset utf8;
 use lxhomework;
 
 #年级表
-4.create table class_grade(
+#4.
+create table class_grade(
     gid int primary key auto_increment,
     gname char(20) not null
 );
