@@ -67,7 +67,7 @@ create table teach2cls(
 #1.自行创建测试数据
 
 #年级表插入数据
-insert into class_grade valuse(
+insert into class_grade values(
 ('一年级'),
 ('二年级'),
 ('三年级')
