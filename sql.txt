@@ -111,3 +111,58 @@ insert into teach2cls(tid,cid) values
 
 #2.查询学生总人数
 select count(sid) from student;
+
+
+#3.查询生物课程和物理课程成绩都及格的学生id和姓名
+select sid,sname from student where sid in
+(select student_id from score inner join course on score.course_id = course.cid where cname = '生物'and score > 60)
+and sid in
+(select student_id from score inner join course on score.course_id = course.cid where cname = '物理'and score > 60);
+
+
+#4.查询每个年级的班级数，取出班级数最多的前三个年级
+select gname from (
+    select gname,count(caption) as num from class inner join class_grade on class.grade_id = class_grade.gid group by gname
+) as t1 order by t1.num desc limit 3;
+
+#5.查询平均成绩最高和最低的学生的id和姓名以及平均成绩
+select sid,sname,最高平均成绩 from student inner join (
+(select student_id, avg(score) as '最高平均成绩' from score inner join course on score.course_id = course.cid
+    group by student_id order by avg(score) desc limit 1)) as t2 on student.sid = t2.student_id;
+
+select sid,sname,最低平均成绩 from student inner join (
+(select student_id, avg(score) as '最低平均成绩' from score inner join course on score.course_id = course.cid
+    group by student_id order by avg(score) limit 1)) as t2 on student.sid = t2.student_id;
+
+
+#6.查询每个年级的学生人数
+select gname,count(sid) from student inner join (
+select cid,gname from class right join class_grade on class.grade_id = class_grade.gid) as t2 on t2.cid = student.class_id
+group by gname;
+
+#7.查询每位学生的学号，姓名，选课数，平均成绩
+select sid as '学号',sname as '姓名',course_count as '选课数',avg_score as '平均成绩'from student
+left join
+(
+select student_id,count(course_id) as course_count,avg(score) as avg_score from score group by student_id
+) as tk
+on student.sid = t.student_id;
+
+#8.查询学生编号为“2”的学生的姓名、该学生成绩最高的课程名、成绩最低的课程名及分数；
+
+select * from
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
