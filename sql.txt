@@ -202,17 +202,38 @@ select sid,sname from student where sid in
 (select student_id from score where course_id =1 or course_id =2 group by student_id having count(student_id) >1);
 
 #15、查询没有带过高年级的老师id和姓名；
-
-
-
-
-
+select tid,tname from teacher
+  where tid not in
+  (select tid from teacher2cls
+   left join class
+   on teacher2cls.cid = class.cid
+   where grade_id in (5,6)
+   );
 
 #16、查询学过“张三”老师所教的所有课的同学的学号、姓名；
-
+SELECT DISTINCT sid,sname from student
+inner JOIN
+(select student_id from score
+LEFT JOIN
+(select tid,cid from course
+LEFT JOIN teacher
+on tid = teacher_id
+where tname = '张三') as t
+on cid = course_id) as t1
+on sid = t1.student_id;
 
 #17、查询带过超过2个班级的老师的id和姓名；
+select t.tid,tname from teacher t
+inner join teacher2cls t_c
+on t_c.tid = t.tid
+group by t_c.tid
+having count(cid)>2;
+
 #18、查询课程编号“2”的成绩比课程编号“1”课程低的所有同学的学号、姓名；
+
+
+
+
 #19、查询所带班级数最多的老师id和姓名；
 #20、查询有课程成绩小于60分的同学的学号、姓名；
 #21、查询没有学全所有课的同学的学号、姓名；
