@@ -149,8 +149,78 @@ select student_id,count(course_id) as course_count,avg(score) as avg_score from 
 on student.sid = t.student_id;
 
 #8.查询学生编号为“2”的学生的姓名、该学生成绩最高的课程名、成绩最低的课程名及分数；
+#最高分
+select sname,cname,score from student inner join
+(select * from score inner join course on score.course_id = course.cid where student_id =2 order by score desc limit 1) as t2
+on student.sid = t2.student_id;
 
-select * from
+#最低分
+select sname,cname,score from student inner join
+(selec from score inner join course on score.course_id = course.cid where student_id =2 order by score limit 1) as t2
+on student.sid = t2.student_id;
+
+
+#9.查询姓“李”的老师的个数和所带班级数
+select * from (
+select count(tid) as "李老师个数" from teacher where tname like "李%")as t2,
+(select count(tcid) as "班级个数" from teacher inner join teach2cls on teacher.tid = teach2cls.tid where tname like "李%") as t3;
+
+#10.查询班级数小于5的年级id和年级名
+select gid ,gname from class_grade inner join class on class_grade.gid = class.grade_id group by gname having count(caption)<5;
+
+#11.查询班级信息，包括班级id、班级名称、年级、年级级别(12为低年级，34为中年级，56为高年级)
+select cid as '班级id',caption as '班级名称',gname as '年级',
+ case
+    when gname in ('一年级','二年级') then '低年级'
+    when gname in ('三年级','四年级') then '中年级'
+    when gname in ('五年级','六年级') then '高年级'
+    else 0
+    end as '年级级别'
+    from class_grade inner join class on class_grade.gid = class.grade_id;
+
+#12.查询学过“张三”老师2门课以上的同学的学号、姓名
+select sid as '学号',sname as '姓名' from student
+where sid in
+(
+    select student_id from score
+    where course_id in
+    (
+        select cid from course
+        where teacher_id in
+        (select tid from teacher where tname = '张三')
+    )
+    group by student_id having count(student_id) > 1
+) ;
+
+#13.查询教授课程超过2门的老师的id和姓名
+select tid ,tname from teacher
+where tid in
+(select teacher_id from course group by teacher_id having count(cid) >1);
+
+#14.查询学过编号“1”课程和编号“2”课程的同学的学号、姓名
+select sid,sname from student where sid in
+(select student_id from score where course_id =1 or course_id =2 group by student_id having count(student_id) >1);
+
+#15、查询没有带过高年级的老师id和姓名；
+
+
+
+
+
+
+#16、查询学过“张三”老师所教的所有课的同学的学号、姓名；
+#17、查询带过超过2个班级的老师的id和姓名；
+#18、查询课程编号“2”的成绩比课程编号“1”课程低的所有同学的学号、姓名；
+#19、查询所带班级数最多的老师id和姓名；
+#20、查询有课程成绩小于60分的同学的学号、姓名；
+#21、查询没有学全所有课的同学的学号、姓名；
+#22、查询至少有一门课与学号为“1”的同学所学相同的同学的学号和姓名；
+#23、查询至少学过学号为“1”同学所选课程中任意一门课的其他同学学号和姓名；
+#24、查询和“2”号同学学习的课程完全相同的其他同学的学号和姓名；
+#25、删除学习“张三”老师课的score表记录；
+#26、向score表中插入一些记录，这些记录要求符合以下条件：①没有上过编号“2”课程的同学学号；②插入“2”号课程的平均成绩；
+
+
 
 
 
