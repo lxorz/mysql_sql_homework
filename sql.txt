@@ -230,14 +230,40 @@ group by t_c.tid
 having count(cid)>2;
 
 #18、查询课程编号“2”的成绩比课程编号“1”课程低的所有同学的学号、姓名；
-
-
-
+SELECT sid,sname from student
+where sid in
+(select t1.student_id from
+(SELECT student_id,score from score
+where course_id = 2) as t1,
+(SELECT student_id,score from score
+where course_id = 1) as t2
+where t1.student_id = t2.student_id and t1.score<t2.score);
 
 #19、查询所带班级数最多的老师id和姓名；
+select t.tid,tname from teacher t
+INNER JOIN
+(select tid,max(count_class) as max_class from
+(select tid,count(cid) as count_class from teach2cls
+GROUP BY tid) as t1) as t2
+on t.tid = t2.tid;
+
 #20、查询有课程成绩小于60分的同学的学号、姓名；
+SELECT st.sid,sname from student st
+INNER JOIN score sc
+on st.sid = sc.student_id
+where score <60;
+
 #21、查询没有学全所有课的同学的学号、姓名；
+select sid,sname from student
+where sid not IN
+(SELECT student_id from score
+GROUP BY student_id
+HAVING count(course_id) = (select count(cid) from course));
+
 #22、查询至少有一门课与学号为“1”的同学所学相同的同学的学号和姓名；
+
+
+
 #23、查询至少学过学号为“1”同学所选课程中任意一门课的其他同学学号和姓名；
 #24、查询和“2”号同学学习的课程完全相同的其他同学的学号和姓名；
 #25、删除学习“张三”老师课的score表记录；
