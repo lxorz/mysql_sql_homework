@@ -350,28 +350,125 @@ inner join score on course.cid = score.course_id group by course_id order by sco
 
 
 #31、查询各科成绩前三名的记录(不考虑成绩并列情况) ；
-select * from
-#32、查询每门课程被选修的学生数；
-#33、查询选修了2门以上课程的全部学生的学号和姓名；
-#34、查询男生、女生的人数，按倒序排列；
-#35、查询姓“张”的学生名单；
-#36、查询同名同姓学生名单，并统计同名人数；
-#37、查询每门课程的平均成绩，结果按平均成绩升序排列，平均成绩相同时，按课程号降序排列；
-#38、查询课程名称为“数学”，且分数低于60的学生姓名和分数；
-#39、查询课程编号为“3”且课程成绩在80分以上的学生的学号和姓名；
-#40、求选修了课程的学生人数
-#41、查询选修“王五”老师所授课程的学生中，成绩最高和最低的学生姓名及其成绩；
-#42、查询各个课程及相应的选修人数；
-#43、查询不同课程但成绩相同的学生的学号、课程号、学生成绩；
-#44、查询每门课程成绩最好的前两名学生id和姓名；
-#45、检索至少选修两门课程的学生学号；
-#46、查询没有学生选修的课程的课程号和课程名；
-#47、查询没带过任何班级的老师id和姓名；
-#48、查询有两门以上课程超过80分的学生id及其平均成绩；
-#49、检索“3”课程分数小于60，按分数降序排列的同学学号；
-#50、删除编号为“2”的同学的“1”课程的成绩；
-#51、查询同时选修了物理课和生物课的学生id和姓名；
+#生物前三名
+select student_id,score as '成绩' from score where course_id =1 order by score desc limit 3;
 
+#体育前三名
+select student_id,score as '成绩' from score where course_id =2 order by score desc limit 3;
+
+#物理前三名
+select student_id,score as '成绩' from score where course_id =3 order by score desc limit 3;
+
+
+#32、查询每门课程被选修的学生数；
+select cname,count(student_id) as '选修学生数' from score
+right join course on course.cid = score.course_id
+group by course_id;
+
+
+#33、查询选修了2门以上课程的全部学生的学号和姓名；
+select student_id as '学号',sname as '姓名' from student
+left join score on student.sid = score.student_id
+group by course_id having count(course_id)>1;
+
+
+#34、查询男生、女生的人数，按倒序排列；
+select gender as '性别',count(gender) as '人数' from student group by gender order by count(gender) desc;
+
+#35、查询姓“张”的学生名单；
+select * from student where sname like "张%"
+
+
+#36、查询同名同姓学生名单，并统计同名人数；
+select sname,count(sname) as '同名人数'
+from student group by sname having count(sname) >1;
+#37、查询每门课程的平均成绩，结果按平均成绩升序排列，平均成绩相同时，按课程号降序排列；
+select avg(score) from score left join course on score.course_id = course.cid
+group by course_id
+order by avg(score),cid desc ;
+
+
+#38、查询课程名称为“体育”，且分数低于60的学生姓名和分数；
+select sname,score from score left join course on score.course_id = course.cid
+inner join student on student.sid = score.student_id where cname = "体育" and score < 60 ;
+
+
+#39、查询课程编号为“3”且课程成绩在80分以上的学生的学号和姓名；
+select student_id,sname from score left join course on score.course_id = course.cid
+inner join student on student.sid = score.student_id where cid = 3 and score > 80;
+
+
+#40、求选修了课程的学生人数
+select course_id ,count(student_id) as "选修课程的人数" from score group by course_id;
+
+#41、查询选修“李四”老师所授课程的学生中，成绩最高和最低的学生姓名及其成绩；
+select sname,max(score),min(score) from teacher left join course on teacher.tid = course.teacher_id
+left join score on score.course_id = course.cid
+left join student on student.sid = score.student_id
+where tname = "李四";
+
+
+#42、查询各个课程及相应的选修人数；
+select course_id ,count(student_id) as "选修课程的人数" from score group by course_id;
+
+
+#43、查询不同课程但成绩相同的学生的学号、课程号、学生成绩；
+select * from score as t1,score as t2
+where t1.student_id != t2.student_id and t1.course_id != t2.course_id and t1.score = t2.score;
+
+
+#44、查询每门课程成绩最好的前两名学生id和姓名；
+#生物前2名
+select student_id,sname  from score left join student on score.student_id = student.sid where course_id =1 order by score desc limit 2;
+
+#体育前2名
+select student_id,sname  from score left join student on score.student_id = student.sid where course_id =2 order by score desc limit 2;
+
+#物理前2名
+select student_id,sname  from score left join student on score.student_id = student.sid where course_id =3 order by score desc limit 2;
+#45、检索至少选修两门课程的学生学号；
+select student_id from score group by course_id having count(course_id) >1;
+
+#46、查询没有学生选修的课程的课程号和课程名；
+select cname,cid from course left join score on course.cid = score.course_id where student_id is NULL;
+
+#47、查询没带过任何班级的老师id和姓名；
+select * from teacher left join teach2cls on teacher.tid = teach2cls.tid where cid is NULL;
+
+#48、查询有两门以上课程超过80分的学生id及其平均成绩；
+SELECT student_id, AVG(score)
+FROM score
+WHERE score.score > 80
+GROUP BY student_id
+HAVING COUNT(score.course_id) >= 2;
+
+#49、检索“3”课程分数小于60，按分数降序排列的同学学号；
+SELECT student_id, score
+FROM score
+WHERE score.course_id = 3 AND score.score < 60
+ORDER BY student_id DESC;
+#50、删除编号为“2”的同学的“1”课程的成绩；
+DELETE FROM score
+WHERE score.sid =
+    (SELECT t1.sid
+    FROM
+        (SELECT sid
+        FROM score AS s1
+        WHERE student_id = 2 AND course_id = 1) AS t1
+    );
+#51、查询同时选修了物理课和生物课的学生id和姓名；
+SELECT sid, sname
+FROM student
+WHERE sid IN
+    (SELECT student_id
+    FROM score
+    WHERE course_id IN
+        (SELECT cid
+        FROM course
+        WHERE course.cname IN ('物理','生物'))
+    GROUP BY student_id
+    HAVING count(course_id) = 2
+    );
 
 
 
