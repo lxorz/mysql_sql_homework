@@ -371,13 +371,11 @@ select student_id as '学号',sname as '姓名' from student
 left join score on student.sid = score.student_id
 group by course_id having count(course_id)>1;
 
-
 #34、查询男生、女生的人数，按倒序排列；
 select gender as '性别',count(gender) as '人数' from student group by gender order by count(gender) desc;
 
 #35、查询姓“张”的学生名单；
 select * from student where sname like "张%"
-
 
 #36、查询同名同姓学生名单，并统计同名人数；
 select sname,count(sname) as '同名人数'
@@ -469,9 +467,6 @@ WHERE sid IN
     GROUP BY student_id
     HAVING count(course_id) = 2
     );
-
-
-
 
 
 
